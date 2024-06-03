@@ -1,1 +1,22 @@
-# Waterfall-Engine
+# Waterfall Distribution Script
+
+This script processes transactions and handles waterfall distributions, calculating preferred returns, adding tiers, and outputting results to a CSV file.
+
+## Requirements
+
+- Python 3.x
+- pandas
+- argparse
+
+## Installation
+
+1. Ensure you have Python 3.x installed on your system.
+2. Install the required libraries using pip:
+   pip install pandas
+
+## Usage
+python main.py <commitment_id> [--output_file_path <output_file_path>]
+
+## Args
+<commitment_id>: The commitment ID for the waterfall (required).
+--output_file_path: Optional argument to specify the output file path for the CSV file. If not provided, the output file will be named waterfall_<commitment_id>.csv.

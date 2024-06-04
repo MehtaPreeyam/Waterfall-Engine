@@ -3,8 +3,8 @@ from typing import Optional
 import datetime
 
 """
-This class is meant to simulate an ORM for a Transactions data model. After reading transactions from the csv file we store them into a pandas dataframe 
-and this class has all the helper functions to give us all the contributions and distributions for a commitment_id 
+After reading transactions from the csv file we store them into a pandas dataframe in this class
+This class also contains all the helper functions to give us all the contributions and distributions for a commitment_id 
 """
 class Transactions:
     def __init__(self, df: Optional[pd.DataFrame] = None):

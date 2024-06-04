@@ -10,7 +10,7 @@ This script processes transactions and handles waterfall distributions, calculat
 
 ## Installation
 
-1. Ensure you have Python 3.x installed on your system.
+1. Ensure you have Python 3.9 installed on your system.
 2. Install the required libraries using pip:
    pip install pandas
 

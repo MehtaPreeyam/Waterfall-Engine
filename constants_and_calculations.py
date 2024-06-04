@@ -24,16 +24,23 @@ waterfall_columns = [
             TOTAL_TIER_DISTRIBUTION_COLUMN,
             REMAINING_CAPITAL_FOR_NEXT_TIER_COLUMN
         ]
+
 """
 All of the helper functions for doing our tiered calculations are below. Each of them will return the row of data that we will append to our waterfall dataframe
 """
 
-def calculate_return_of_capital(contribution_sum: float, distribution_total: float) -> dict:
+def calculate_return_of_capital(contribution_sum: float, distribution_total: float, previous_capital_returned: float) -> dict:
+    if(previous_capital_returned >= contribution_sum):
+        contribution_sum = 0
+    else:
+        # Maximum possible previous capital returned is the sum of all previous distributions and if its not greater than the current contribution sum then subtract it
+        contribution_sum -= previous_capital_returned
+    
     if(contribution_sum > distribution_total):
         contribution_sum = distribution_total
-    
+
     return {
-        TIER_NAME_COLUMN: PREFERRED_RETURN,
+        TIER_NAME_COLUMN: RETURN_OF_CAPITAL,
         STARTING_TIER_CAPITAL_COLUMN: distribution_total,
         LP_ALLOCATION_COLUMN: contribution_sum,
         GP_ALLOCATION_COLUMN: 0,
@@ -42,7 +49,7 @@ def calculate_return_of_capital(contribution_sum: float, distribution_total: flo
     }
 
 
-def _calculate_preffered_return_for_one_contribution(starting_capital: float, waterfall_date: datetime, contribution_date: datetime) -> float:
+def _calculate_preffered_return_for_one_contribution(contribution_amount: float, waterfall_date: datetime, contribution_date: datetime) -> float:
     preffered_rate = PREFERRED_RETURN_PERCENTAGE / 100
     date_format = "%m/%d/%Y"
     waterfall_date = datetime.strptime(waterfall_date, date_format)
@@ -50,7 +57,7 @@ def _calculate_preffered_return_for_one_contribution(starting_capital: float, wa
 
     difference_in_days = (waterfall_date - contribution_date).days
 
-    preferred_return = (starting_capital * pow(1 + preffered_rate, (difference_in_days/365))) - starting_capital
+    preferred_return = (contribution_amount * pow(1 + preffered_rate, (difference_in_days/365))) - contribution_amount
 
     return preferred_return
 
@@ -60,6 +67,9 @@ def calculate_total_preferred_return(starting_capital, contributions: list, wate
         lp_allocation += _calculate_preffered_return_for_one_contribution(contribution['transaction_amount'], waterfall_date, contribution['transaction_date'])
     
     lp_allocation = round(lp_allocation, 2)
+
+    if(lp_allocation > starting_capital): # Assure we don't allocate more money than we have to give
+        lp_allocation = starting_capital
 
     return {
         TIER_NAME_COLUMN: PREFERRED_RETURN,

@@ -51,9 +51,6 @@ def calculate_return_of_capital(contribution_sum: float, distribution_total: flo
 
 def _calculate_preffered_return_for_one_contribution(contribution_amount: float, waterfall_date: datetime, contribution_date: datetime) -> float:
     preffered_rate = PREFERRED_RETURN_PERCENTAGE / 100
-    date_format = "%m/%d/%Y"
-    waterfall_date = datetime.strptime(waterfall_date, date_format)
-    contribution_date = datetime.strptime(contribution_date, date_format)
 
     difference_in_days = (waterfall_date - contribution_date).days
 
@@ -64,7 +61,7 @@ def _calculate_preffered_return_for_one_contribution(contribution_amount: float,
 def calculate_total_preferred_return(starting_capital, contributions: list, waterfall_date: datetime) -> dict:
     lp_allocation = 0
     for contribution in contributions:
-        lp_allocation += _calculate_preffered_return_for_one_contribution(contribution['transaction_amount'], waterfall_date, contribution['transaction_date'])
+        lp_allocation += _calculate_preffered_return_for_one_contribution(contribution.transaction_amount, waterfall_date, contribution.transaction_date)
     
     lp_allocation = round(lp_allocation, 2)
 

@@ -1,6 +1,7 @@
 import unittest
 from datetime import datetime
-import constants_and_calculations as calcs
+from constants import constants_and_calculations as calcs
+from models.transaction import Transaction
 
 class TestWaterfallCalculations(unittest.TestCase):
     def test_calculate_return_of_capital(self):
@@ -48,19 +49,29 @@ class TestWaterfallCalculations(unittest.TestCase):
 
     def test_calculate_preferred_return_for_one_contribution(self):
         starting_capital = 100000
-        waterfall_date = "01/01/2020"
-        contribution_date = "01/01/2019"
+        waterfall_date = datetime.strptime("01/01/2020", "%m/%d/%Y")
+        contribution_date = datetime.strptime("01/01/2019", "%m/%d/%Y")
         expected_preferred_return = 8000.0
         result = calcs._calculate_preffered_return_for_one_contribution(starting_capital, waterfall_date, contribution_date)
         self.assertEqual(result, expected_preferred_return)
 
     def test_calculate_total_preferred_return(self):
         starting_capital = 100000
-        contributions = [
-            {'transaction_amount': 50000, 'transaction_date': "01/01/2019"},
-            {'transaction_amount': 50000, 'transaction_date': "06/01/2019"}
-        ]
-        waterfall_date = "01/01/2020"
+        transaction1 = Transaction(
+            transaction_date=datetime.strptime("01/01/2019", "%m/%d/%Y"),
+            transaction_amount=50000,
+            contribution_or_distribution='contribution',
+            commitment_id=1
+        )
+        transaction2 = Transaction(
+            transaction_date=datetime.strptime("06/01/2019", "%m/%d/%Y"),
+            transaction_amount=50000,
+            contribution_or_distribution='contribution',
+            commitment_id=1
+        )
+        contributions = [transaction1, transaction2]
+
+        waterfall_date = datetime.strptime("01/01/2020", "%m/%d/%Y")
         expected_output = {
             'Tier Name': calcs.PREFERRED_RETURN,
             'Starting Tier Capital': 100000,
@@ -70,17 +81,24 @@ class TestWaterfallCalculations(unittest.TestCase):
             'Remaining Capital for Next Tier': 93692.21
         }
         result = calcs.calculate_total_preferred_return(starting_capital, contributions, waterfall_date)
-        self.assertAlmostEqual(result['LP Allocation'], expected_output['LP Allocation'])
-        self.assertAlmostEqual(result['Total Tier Distribution'], expected_output['Total Tier Distribution'])
-        self.assertAlmostEqual(result['Remaining Capital for Next Tier'], expected_output['Remaining Capital for Next Tier'])
+        self.assertEqual(result, expected_output)
 
     def test_calculate_total_preferred_return_where_lp_allocation_exceeds(self):
         starting_capital = 100
-        contributions = [
-            {'transaction_amount': 50000, 'transaction_date': "01/01/2019"},
-            {'transaction_amount': 50000, 'transaction_date': "06/01/2019"}
-        ]
-        waterfall_date = "01/01/2020"
+        transaction1 = Transaction(
+            transaction_date=datetime.strptime("01/01/2019", "%m/%d/%Y"),
+            transaction_amount=50000,
+            contribution_or_distribution='contribution',
+            commitment_id=1
+        )
+        transaction2 = Transaction(
+            transaction_date=datetime.strptime("06/01/2019", "%m/%d/%Y"),
+            transaction_amount=50000,
+            contribution_or_distribution='contribution',
+            commitment_id=1
+        )
+        contributions = [transaction1, transaction2]
+        waterfall_date = datetime.strptime("01/01/2020", "%m/%d/%Y")
         expected_output = {
             'Tier Name': calcs.PREFERRED_RETURN,
             'Starting Tier Capital': 100,
@@ -103,9 +121,7 @@ class TestWaterfallCalculations(unittest.TestCase):
             'Remaining Capital for Next Tier': 75000.0
         }
         result = calcs.calculate_catchup(starting_capital)
-        self.assertAlmostEqual(result['GP Allocation'], expected_output['GP Allocation'])
-        self.assertAlmostEqual(result['Total Tier Distribution'], expected_output['Total Tier Distribution'])
-        self.assertAlmostEqual(result['Remaining Capital for Next Tier'], expected_output['Remaining Capital for Next Tier'])
+        self.assertEqual(result, expected_output)
 
     def test_calculate_final_split(self):
         starting_capital = 100000

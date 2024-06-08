@@ -22,3 +22,6 @@ python main.py <commitment_id> [--output_file_path <output_file_path>] [--carrie
 --output_file_path: Optional argument to specify the output file path for the CSV file. If not provided, the output file will be named waterfall_<commitment_id>.csv.
 --carried_interest: Optional argument to specify the carried interest
 --preferred_return: Optional argument to specify the preferred return
+
+## To run unit tests:
+python3 -m unittest discover test

@@ -1,5 +1,5 @@
 import pandas as pd
-import constants_and_calculations as const
+import constants.constants_and_calculations as const
 
 """
 This class stores the Waterfall Output as a pandas dataframe. Contains helper functions for calculating the row for sum totals as well as converting
